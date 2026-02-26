@@ -268,5 +268,32 @@ class UpdateProductImageRequest extends FormRequest {
 
 - `tests/Feature/ProductApiTest.php` vérifie qu’un produit peut être créé via l’API avec `category_name` et des fichiers (`UploadedFile::fake()`), que les relations sont enregistrées et que les fichiers existent sur le disque simulé (`Storage::fake('public')`).
 
----
-Ces composants offrent une API REST complète : catégories (CRUD), produits (CRUD + upload) et images (CRUD indépendant). Les `FormRequest` garantissent la cohérence des données et les relations Eloquent définissent clairement les dépendances entre entités.
+## 8. Relations entre Purchase, Product et User
+
+### Purchase
+- `Purchase` possède une relation `belongsTo` vers `User` et `Product`.
+- Cela signifie qu’un achat est toujours lié à un utilisateur (acheteur) et à un produit spécifique.
+- Exemple :
+```php
+public function user() { return $this->belongsTo(User::class); }
+public function product() { return $this->belongsTo(Product::class); }
+```
+
+### User
+- `User` possède une relation `hasMany` vers `Purchase`.
+- Un utilisateur peut donc avoir plusieurs achats.
+- Exemple :
+```php
+public function purchases() { return $this->hasMany(Purchase::class); }
+```
+
+### Product
+- `Product` possède une relation `hasMany` vers `Purchase`.
+- Un produit peut être acheté plusieurs fois.
+- Exemple :
+```php
+public function purchases() { return $this->hasMany(Purchase::class); }
+```
+
+**Résumé :**
+- Ces relations facilitent la récupération des achats d’un utilisateur ou d’un produit, et permettent de naviguer facilement entre les entités dans vos contrôleurs ou vues.

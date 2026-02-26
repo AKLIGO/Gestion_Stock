@@ -122,4 +122,41 @@ class ProductController extends Controller
 
         return ltrim($url, '/');
     }
+
+
+    public function indexWeb(){
+        $query = Product::with(['category', 'images'])->withCount('images');
+
+        // Filtre par catégorie
+        if ($categoryId = request('category')) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // Filtre par recherche
+        if ($search = request('search')) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $products = $query->paginate();
+        $categories = Category::all();
+        return view('home', compact('products', 'categories'));
+    }
+
+    public function showWeb(Product $product){
+        $product->load(['category', 'images']);
+        return view('product.show', compact('product'));
+    }
+
+    public function payWeb(Product $product)
+    {
+        $quantity = request('quantity');
+        // Validation simple
+        if (!$quantity || $quantity < 1 || $quantity > $product->stock) {
+            return redirect()->back()->with('error', 'Quantité invalide');
+        }
+        // Ici, on peut préparer la logique d'intégration CinetPay
+        // Exemple: sauvegarder la demande, rediriger vers la page de paiement, etc.
+        // Pour l'instant, on affiche juste un message de confirmation
+        return redirect()->back()->with('success', 'Paiement pour ' . $quantity . ' unité(s) du produit lancé.');
+    }
 }

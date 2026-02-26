@@ -18,14 +18,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Category::factory()
-            ->count(3)
-            ->has(
-                Product::factory()
-                    ->count(4)
-                    ->has(ProductImage::factory()->count(2))
-            )
-            ->create();
+
+        // Seeder personnalisé pour les catégories demandées
+        $categories = [
+            ['name' => 'Alimentaire', 'description' => 'Produits alimentaires'],
+            ['name' => 'Informatiques', 'description' => 'Produits informatiques'],
+            ['name' => 'Vestimentaires', 'description' => 'Produits vestimentaires'],
+        ];
+
+
+        // Appel du ProductSeeder pour insérer les produits
+        $this->call(ProductSeeder::class);
 
         User::factory()->create([
             'name' => 'Test User',
